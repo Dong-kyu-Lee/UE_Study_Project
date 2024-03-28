@@ -2,6 +2,7 @@
 
 
 #include "SPCharacter.h"
+#include "SPAnimInstance.h"
 
 // Sets default values
 ASPCharacter::ASPCharacter()
@@ -35,6 +36,18 @@ ASPCharacter::ASPCharacter()
 		GetMesh()->SetAnimInstanceClass(WARRIOR_ANIM.Class);
 	}
 
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_BlackKnight/SK_Blade_BlackKnight.SK_Blade_BlackKnight"));
+		if (SK_WEAPON.Succeeded())
+		{
+			Weapon->SetSkeletalMesh(SK_WEAPON.Object);
+		}
+		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	}
+
 	ArmLengthTo = 800.0f;
 	ArmRotationTo = FRotator(-45.0f, 0.0f, 0.0f);
 	SpringArm->bUsePawnControlRotation = true;
@@ -49,6 +62,8 @@ ASPCharacter::ASPCharacter()
 
 	ArmLengthSpeed = 3.0f;
 	ArmRotationSpeed = 10.0f;
+
+	IsAttacking = false;
 }
 
 
@@ -80,6 +95,15 @@ void ASPCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASPCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASPCharacter::LeftRight);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ASPCharacter::Attack);
+}
+
+void ASPCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	SPAnim = Cast<USPAnimInstance>(GetMesh()->GetAnimInstance());
+
+	SPAnim->OnMontageEnded.AddDynamic(this, &ASPCharacter::OnAttackMontageEnded);
 }
 
 void ASPCharacter::UpDown(float NewAxisValue)
@@ -90,5 +114,18 @@ void ASPCharacter::UpDown(float NewAxisValue)
 void ASPCharacter::LeftRight(float NewAxisValue)
 {
 	DirectionToMove.Y = NewAxisValue;
+}
+
+void ASPCharacter::Attack()
+{
+	if (IsAttacking) return;
+
+	SPAnim->PlayAttackMontage();
+	IsAttacking = true;
+}
+
+void ASPCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
 }
 

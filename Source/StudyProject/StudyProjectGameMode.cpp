@@ -1,15 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "StudyProjectGameMode.h"
-#include "StudyProjectCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "SPCharacter.h"
+#include "SPPlayerController.h"
+
 
 AStudyProjectGameMode::AStudyProjectGameMode()
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPersonCPP/Blueprints/ThirdPersonCharacter"));
-	if (PlayerPawnBPClass.Class != NULL)
-	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+	DefaultPawnClass = ASPCharacter::StaticClass();
+	PlayerControllerClass = ASPPlayerController::StaticClass();
 }

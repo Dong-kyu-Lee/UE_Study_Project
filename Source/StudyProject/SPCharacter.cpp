@@ -3,6 +3,7 @@
 
 #include "SPCharacter.h"
 #include "SPAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASPCharacter::ASPCharacter()
@@ -64,6 +65,10 @@ ASPCharacter::ASPCharacter()
 	ArmRotationSpeed = 10.0f;
 
 	IsAttacking = false;
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("SPCharacter"));
 }
 
 
@@ -104,6 +109,15 @@ void ASPCharacter::PostInitializeComponents()
 	SPAnim = Cast<USPAnimInstance>(GetMesh()->GetAnimInstance());
 
 	SPAnim->OnMontageEnded.AddDynamic(this, &ASPCharacter::OnAttackMontageEnded);
+
+	SPAnim->OnAttackHitCheck.AddUObject(this, &ASPCharacter::AttackCheck);
+}
+
+float ASPCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	UE_LOG(LogTemp, Warning, TEXT("Actor : %s took damage : %f"), *GetName(), FinalDamage);
+	return FinalDamage;
 }
 
 void ASPCharacter::UpDown(float NewAxisValue)
@@ -122,6 +136,58 @@ void ASPCharacter::Attack()
 
 	SPAnim->PlayAttackMontage();
 	IsAttacking = true;
+}
+
+void ASPCharacter::AttackCheck()
+{
+	// 충돌한 물체 정보
+	FHitResult HitResult;
+	// 충돌한 물체 정보에서 자기 자신을 제외
+	FCollisionQueryParams Params(NAME_None, false, this);
+	// 채널을 사용해 충돌을 탐지함
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * 200.0f,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(50.0f),
+		Params
+	);
+
+	// Debug Drawing
+#if ENABLE_DRAW_DEBUG
+// 캐릭터가 보는 방향
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	// 캡슐의 중심
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	// 캡슐 높이의 절반
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	// 캡슐의 회전 정보
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	// 그린 디버그 정보가 지속되는 시간
+	float DebugLifeTime = 5.0f;
+
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
+#endif
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
+			FDamageEvent DamageEvent;
+			HitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+		}
+	}
 }
 
 void ASPCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

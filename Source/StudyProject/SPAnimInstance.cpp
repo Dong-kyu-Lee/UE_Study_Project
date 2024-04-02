@@ -28,3 +28,9 @@ void USPAnimInstance::PlayAttackMontage()
 {
 	Montage_Play(AttackMontage, 1.0f);
 }
+
+void USPAnimInstance::AnimNotify_AttackHitCheck()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AttackHitCheck"));
+	OnAttackHitCheck.Broadcast();
+}

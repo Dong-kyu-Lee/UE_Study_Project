@@ -3,6 +3,7 @@
 
 #include "SPCharacter.h"
 #include "SPAnimInstance.h"
+#include "SPCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -13,6 +14,7 @@ ASPCharacter::ASPCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	CharacterStat = CreateDefaultSubobject<USPCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
@@ -65,6 +67,7 @@ ASPCharacter::ASPCharacter()
 	ArmRotationSpeed = 10.0f;
 
 	IsAttacking = false;
+	IsAttackDuration = false;
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
 
@@ -111,12 +114,21 @@ void ASPCharacter::PostInitializeComponents()
 	SPAnim->OnMontageEnded.AddDynamic(this, &ASPCharacter::OnAttackMontageEnded);
 
 	SPAnim->OnAttackHitCheck.AddUObject(this, &ASPCharacter::AttackCheck);
+
+	CharacterStat->OnHPIsZero.AddLambda([this]()->void {
+		UE_LOG(LogTemp, Warning, TEXT("On HP Is Zero"));
+		SPAnim->SetDeadAnim();
+		SetActorEnableCollision(false);
+		});
 }
 
 float ASPCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	UE_LOG(LogTemp, Warning, TEXT("Actor : %s took damage : %f"), *GetName(), FinalDamage);
+
+	CharacterStat->SetDamage(FinalDamage);
+
 	return FinalDamage;
 }
 
@@ -133,7 +145,8 @@ void ASPCharacter::LeftRight(float NewAxisValue)
 void ASPCharacter::Attack()
 {
 	if (IsAttacking) return;
-
+	if (IsAttackDuration) return;
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &ASPCharacter::AttackDurationEnd, CharacterStat->GetAttackDuration(), false);
 	SPAnim->PlayAttackMontage();
 	IsAttacking = true;
 }
@@ -185,9 +198,15 @@ void ASPCharacter::AttackCheck()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
 			FDamageEvent DamageEvent;
-			HitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
+			IsAttackDuration = true;
 		}
 	}
+}
+
+void ASPCharacter::AttackDurationEnd()
+{
+	IsAttackDuration = false;
 }
 
 void ASPCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

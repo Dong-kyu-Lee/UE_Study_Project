@@ -47,11 +47,17 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	class USPCharacterStatComponent* CharacterStat;
+
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void Attack();
 	void AttackCheck();
+
+	UFUNCTION()
+	void AttackDurationEnd();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -66,6 +72,11 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	float AttackRadius;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsAttackDuration;
+
 	UPROPERTY()
 	class USPAnimInstance* SPAnim;
+
+	FTimerHandle AttackTimer;
 };

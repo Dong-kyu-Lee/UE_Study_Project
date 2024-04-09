@@ -50,6 +50,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 	class USPCharacterStatComponent* CharacterStat;
 
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UStaticMeshComponent* AttackRangeEffect;
+
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);

@@ -3,8 +3,8 @@
 
 #include "SPCharacter.h"
 #include "SPAnimInstance.h"
+#include "SPAIController.h"
 #include "SPCharacterStatComponent.h"
-#include "AttackRangeActor.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -12,6 +12,9 @@ ASPCharacter::ASPCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	AIControllerClass = ASPAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
@@ -91,6 +94,8 @@ ASPCharacter::ASPCharacter()
 	AttackRadius = 50.0f;
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("SPCharacter"));
+
+	IsAIControlled = false;
 }
 
 
@@ -150,6 +155,22 @@ float ASPCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	return FinalDamage;
 }
 
+void ASPCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	CharacterStat->SetCharacterStat(IsPlayerControlled());
+
+	if (IsPlayerControlled())
+	{
+		IsAIControlled = false;
+	}
+	else
+	{
+		IsAIControlled = true;
+	}
+	GetCharacterMovement()->MaxWalkSpeed = CharacterStat->GetSpeed();
+}
+
 void ASPCharacter::UpDown(float NewAxisValue)
 {
 	DirectionToMove.X = NewAxisValue;
@@ -163,7 +184,7 @@ void ASPCharacter::LeftRight(float NewAxisValue)
 void ASPCharacter::Attack()
 {
 	if (IsAttacking) return;
-	if (IsAttackDuration) return;
+	if (IsPlayerControlled() && IsAttackDuration) return;
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &ASPCharacter::AttackDurationEnd, CharacterStat->GetAttackDuration(), false);
 	SPAnim->PlayAttackMontage();
 	AttackRangeEffect->SetHiddenInGame(false);
@@ -232,5 +253,6 @@ void ASPCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 {
 	IsAttacking = false;
 	AttackRangeEffect->SetHiddenInGame(true);
+	OnAttackEnd.Broadcast();
 }
 

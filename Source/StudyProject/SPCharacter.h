@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SPCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+
 UCLASS()
 class STUDYPROJECT_API ASPCharacter : public ACharacter
 {
@@ -37,6 +39,7 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	virtual void PossessedBy(AController* NewController) override;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
@@ -53,10 +56,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* AttackRangeEffect;
 
+	void Attack();
+	FOnAttackEndDelegate OnAttackEnd;
+
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
-	void Attack();
 	void AttackCheck();
 
 	UFUNCTION()
@@ -82,4 +87,6 @@ private:
 	class USPAnimInstance* SPAnim;
 
 	FTimerHandle AttackTimer;
+
+	bool IsAIControlled;
 };

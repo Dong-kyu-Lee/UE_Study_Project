@@ -19,7 +19,9 @@ public:
 
 	void SetDamage(float NewDamage);
 	float GetAttack();
+	float GetSpeed() const { return Speed; }
 	float GetAttackDuration() const { return AttackDuration; }
+	void SetCharacterStat(bool IsPlayer);
 
 	FOnHPIsZeroDelegate OnHPIsZero;
 
@@ -30,6 +32,9 @@ protected:
 
 private:
 	float MaxHP;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float Speed;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category=Stat, Meta=(AllowPrivateAccess = true))
 	float CurrentHP;

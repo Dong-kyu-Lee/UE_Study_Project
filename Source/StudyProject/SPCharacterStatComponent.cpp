@@ -12,9 +12,10 @@ USPCharacterStatComponent::USPCharacterStatComponent()
 	bWantsInitializeComponent = true;
 	
 	MaxHP = 120.0f;
+	Speed = 600.0f;
 	CurrentHP = MaxHP;
 	Force = 40.0f;
-	AttackDuration = 20.0f;
+	AttackDuration = 7.0f;
 }
 
 // Called when the game starts
@@ -29,6 +30,7 @@ void USPCharacterStatComponent::BeginPlay()
 void USPCharacterStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+	
 }
 
 void USPCharacterStatComponent::SetDamage(float NewDamage)
@@ -43,4 +45,23 @@ void USPCharacterStatComponent::SetDamage(float NewDamage)
 float USPCharacterStatComponent::GetAttack()
 {
 	return Force;
+}
+
+void USPCharacterStatComponent::SetCharacterStat(bool IsPlayer)
+{
+	if (IsPlayer)
+	{
+		MaxHP = 120.0f;
+		CurrentHP = MaxHP;
+		Force = 40.0f;
+		AttackDuration = 7.0f;
+		Speed = 600.0f;
+	}
+	else
+	{
+		MaxHP = 80.0f;
+		CurrentHP = MaxHP;
+		Force = 40.0f;
+		Speed = 400.0f;
+	}
 }

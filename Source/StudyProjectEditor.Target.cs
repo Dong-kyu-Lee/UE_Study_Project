@@ -9,6 +9,6 @@ public class StudyProjectEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.Add("StudyProject");
+		ExtraModuleNames.AddRange(new string[] { "StudyProject", "StudyProjectSetting" });
 	}
 }

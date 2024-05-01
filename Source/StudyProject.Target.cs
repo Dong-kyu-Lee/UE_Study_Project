@@ -9,6 +9,6 @@ public class StudyProjectTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.Add("StudyProject");
+		ExtraModuleNames.AddRange(new string[] { "StudyProject", "StudyProjectSetting" });
 	}
 }

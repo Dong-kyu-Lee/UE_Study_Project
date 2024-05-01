@@ -5,12 +5,22 @@
 	"Description": "",
 	"Modules": [
 		{
+			"Name": "StudyProjectSetting",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"AdditionalDependencies": [
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "StudyProject",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"AIModule"
+				"AIModule",
+				"StudyProjectSetting",
+				"UMG"
 			]
 		}
 	]

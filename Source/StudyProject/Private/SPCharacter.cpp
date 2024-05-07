@@ -26,11 +26,10 @@ ASPCharacter::ASPCharacter()
 	CharacterStat = CreateDefaultSubobject<USPCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 	AttackRangeEffect = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ATTACKRANGEEFFECT"));
 	HPBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
-
+	
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 	HPBarWidget->SetupAttachment(GetMesh());
-	AttackRangeEffect->SetupAttachment(GetCapsuleComponent());
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 	SpringArm->TargetArmLength = 400.0f;

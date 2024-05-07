@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "EngineMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "SPPlayerState.generated.h"
 
@@ -13,5 +13,7 @@ UCLASS()
 class STUDYPROJECT_API ASPPlayerState : public APlayerState
 {
 	GENERATED_BODY()
+	
+public:
 	
 };

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "EngineMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "SPPlayerController.generated.h"
 
@@ -14,6 +14,18 @@ class STUDYPROJECT_API ASPPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	ASPPlayerController();
+
+	class USPHUDWidget* GetHUDWidget() const;
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<class USPHUDWidget> HUDWidgetClass;
+
+private:
+	UPROPERTY()
+	class USPHUDWidget* HUDWidget;
 };

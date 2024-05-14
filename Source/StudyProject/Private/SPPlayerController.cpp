@@ -3,6 +3,8 @@
 
 #include "SPPlayerController.h"
 #include "SPHUDWidget.h"
+#include "SPGameState.h"
+#include "SPCharacter.h"
 
 ASPPlayerController::ASPPlayerController()
 {
@@ -28,4 +30,17 @@ void ASPPlayerController::BeginPlay()
 
 	HUDWidget = CreateWidget<USPHUDWidget>(this, HUDWidgetClass);
 	HUDWidget->AddToViewport();
+
+	auto SPGameState = Cast<ASPGameState>(GetWorld()->GetGameState());
+	if (SPGameState == nullptr){
+		UE_LOG(LogTemp, Warning, TEXT("SPGameState is nullptr"));
+		return;
+	}
+	auto SPCharacter = Cast<ASPCharacter>(GetCharacter());
+	if (SPCharacter == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("SPCharacter is nullptr"));
+		return;
+	}
+	HUDWidget->BindLeftTime(SPGameState);
+	HUDWidget->BindAttackCool(SPCharacter);
 }

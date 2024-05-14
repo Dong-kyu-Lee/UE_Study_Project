@@ -16,6 +16,7 @@ enum class ECharacterState : uint8
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnAttackCoolDelegate);
 
 UCLASS()
 class STUDYPROJECT_API ASPCharacter : public ACharacter
@@ -30,6 +31,7 @@ public:
 
 	bool GetHasKey() const;
 	ECharacterState GetCharacterState() const;
+	float GetAttackCoolRatio() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -75,11 +77,15 @@ public:
 
 	void Attack();
 	FOnAttackEndDelegate OnAttackEnd;
+	FOnAttackCoolDelegate OnAttackCool;
+
+	FTimerHandle AttackTimer;
 
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void AttackCheck();
+	void AttackCool();
 
 	UFUNCTION()
 	void AttackDurationEnd();
@@ -116,23 +122,20 @@ private:
 		Meta = (AllowPrivateAccess = true))
 	bool bIsPlayer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State,
+		Meta = (AllowPrivateAccess = true))
+	float DeadTimer;
+
 	UPROPERTY()
 	class ASPAIController* SPAIController;
 
 	UPROPERTY()
 	class ASPPlayerController* SPPlayerController;
 
-	FTimerHandle AttackTimer;
-
 	bool IsAIControlled;
-
 	int32 AssetIndex = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, 
-		Meta = (AllowPrivateAccess = true))
-	float DeadTimer;
-
 	FTimerHandle DeadTimerHandle = {};
-
+	FTimerHandle AttackCoolTimer;
 	bool HasKey = false;
+	float CurrentAttackCool = 0.0f;
 };

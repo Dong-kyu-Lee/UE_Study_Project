@@ -229,6 +229,11 @@ ECharacterState ASPCharacter::GetCharacterState() const
 	return CurrentState;
 }
 
+float ASPCharacter::GetAttackCoolRatio() const
+{
+	return CurrentAttackCool / CharacterStat->GetAttackDuration();
+}
+
 // Called when the game starts or when spawned
 void ASPCharacter::BeginPlay()
 {
@@ -282,6 +287,13 @@ void ASPCharacter::Tick(float DeltaTime)
 		GetController()->SetControlRotation(FRotationMatrix::MakeFromX(DirectionToMove).Rotator());
 		AddMovementInput(DirectionToMove);
 	}
+
+	/*if (CurrentAttackCool > 0 && !IsAIControlled)
+	{
+		CurrentAttackCool -= DeltaTime;
+		float Ratio = CurrentAttackCool / CharacterStat->GetAttackDuration();
+
+	}*/
 }
 
 // Called to bind functionality to input
@@ -351,6 +363,7 @@ void ASPCharacter::Attack()
 {
 	if (IsAttacking) return;
 	if (IsPlayerControlled() && IsAttackDuration) return;
+	CurrentAttackCool = 0.0f;
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &ASPCharacter::AttackDurationEnd, CharacterStat->GetAttackDuration(), false);
 	SPAnim->PlayAttackMontage();
 	AttackRangeEffect->SetHiddenInGame(false);
@@ -406,12 +419,27 @@ void ASPCharacter::AttackCheck()
 			FDamageEvent DamageEvent;
 			HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
 			IsAttackDuration = true;
+			GetWorldTimerManager().SetTimer(AttackCoolTimer, this, &ASPCharacter::AttackCool, 0.5f, true, 0.5f);
 		}
+	}
+}
+
+void ASPCharacter::AttackCool()
+{
+	CurrentAttackCool += 0.5f;
+	OnAttackCool.Broadcast();
+	if (CurrentAttackCool >= CharacterStat->GetAttackDuration())
+	{
+		GetWorldTimerManager().ClearTimer(AttackCoolTimer);
 	}
 }
 
 void ASPCharacter::AttackDurationEnd()
 {
+	AttackCool();
+	// OnAttackCool.Broadcast();
+	// CurrentAttackCool = 0.0f;
+	// GetWorldTimerManager().ClearTimer(AttackCoolTimer);
 	IsAttackDuration = false;
 }
 

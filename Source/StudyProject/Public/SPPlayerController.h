@@ -28,4 +28,6 @@ protected:
 private:
 	UPROPERTY()
 	class USPHUDWidget* HUDWidget;
+
+	class ASPGameState* CurrentGameState;
 };

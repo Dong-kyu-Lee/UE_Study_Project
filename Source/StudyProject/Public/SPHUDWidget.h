@@ -15,6 +15,21 @@ class STUDYPROJECT_API USPHUDWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	// void BindAttackCool(class USPCharacterStatComponent* CharacterStat);
-	// void BindLeftTime()
+	void BindAttackCool(class ASPCharacter* Character);
+	void BindLeftTime(class ASPGameState* GameState);
+
+protected:
+	virtual void NativeConstruct() override;
+	void UpdateTimerText();
+	void UpdateAttackCool();
+
+private:
+	TWeakObjectPtr<class ASPCharacter> CurrentCharacter;
+	TWeakObjectPtr<class ASPGameState> CurrentGameState;
+
+	UPROPERTY()
+	class UProgressBar* AttackCoolBar;
+
+	UPROPERTY()
+	class UTextBlock* LeftTime;
 };

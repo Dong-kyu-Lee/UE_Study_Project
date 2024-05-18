@@ -22,7 +22,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	UWorld* World = ControllingPawn->GetWorld();
 	FVector Center = ControllingPawn->GetActorLocation();
-	float DetectRadius = 600.0f;
+	float DetectRadius = 400.0f;
 
 	if (nullptr == World) return;
 	TArray<FOverlapResult> OverlapResults;

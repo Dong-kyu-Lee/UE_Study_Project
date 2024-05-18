@@ -30,6 +30,7 @@ ASPCharacter::ASPCharacter()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 	HPBarWidget->SetupAttachment(GetMesh());
+	AttackRangeEffect->SetupAttachment(GetMesh());
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 	SpringArm->TargetArmLength = 400.0f;
@@ -42,12 +43,6 @@ ASPCharacter::ASPCharacter()
 	{
 		HPBarWidget->SetWidgetClass(UI_HUD.Class);
 		HPBarWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
-	}
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_PLANE(TEXT("/Game/StarterContent/Shapes/Shape_Plane.Shape_Plane"));
-	if (SM_PLANE.Succeeded())
-	{
-		AttackRangeEffect->SetStaticMesh(SM_PLANE.Object);
 	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard"));
@@ -78,18 +73,25 @@ ASPCharacter::ASPCharacter()
 		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 	}
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_PLANE(TEXT("/Game/StarterContent/Shapes/Shape_Plane.Shape_Plane"));
+	if (SM_PLANE.Succeeded())
+	{
+		AttackRangeEffect->SetStaticMesh(SM_PLANE.Object);
+	}
+
 	static ConstructorHelpers::FObjectFinder<UMaterial> MT_ATTACK(TEXT("/Game/StarterContent/Materials/M_AttackEffect.M_AttackEffect"));
 	if (MT_ATTACK.Succeeded())
 	{
 		AttackRangeEffect->SetMaterial(0, MT_ATTACK.Object);
 	}
 	AttackRangeEffect->SetCollisionProfileName(TEXT("NoCollision"));
-	AttackRangeEffect->SetRelativeLocation(FVector(100.0f, 0.0f, -45.0f));
+	AttackRangeEffect->SetRelativeLocation(FVector(0.0f, 100.0f, 45.0f));
+	AttackRangeEffect->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 	AttackRangeEffect->SetRelativeScale3D(FVector(3.0f, 1.0f, 1.0f));
 	AttackRangeEffect->SetHiddenInGame(true);
 
 	ArmLengthTo = 800.0f;
-	ArmRotationTo = FRotator(-45.0f, 0.0f, 0.0f);
+	ArmRotationTo = FRotator(-60.0f, 0.0f, 0.0f);
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = false;
@@ -181,7 +183,7 @@ void ASPCharacter::SetCharacterState(ECharacterState NewState)
 	{
 		SetActorEnableCollision(false);
 		GetMesh()->SetHiddenInGame(false);
-		// HPBarWidget->SetHiddenInGame(true);
+		HPBarWidget->SetHiddenInGame(true);
 		SPAnim->SetDeadAnim();
 		SetCanBeDamaged(false);
 

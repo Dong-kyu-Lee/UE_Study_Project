@@ -45,4 +45,9 @@ void USPGamePlayWidget::OnReturnToTitleClicked()
 
 void USPGamePlayWidget::OnRetryGameClicked()
 {
+	auto SPPlayerController = Cast<ASPPlayerController>(GetOwningPlayer());
+	if (nullptr != SPPlayerController)
+	{
+		SPPlayerController->RestartLevel();
+	}
 }

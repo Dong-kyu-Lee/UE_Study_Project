@@ -6,6 +6,7 @@
 #include "SPGameState.h"
 #include "SPCharacter.h"
 #include "SPGamePlayWidget.h"
+#include "SPGamePlayResultWidget.h"
 
 ASPPlayerController::ASPPlayerController()
 {
@@ -21,6 +22,13 @@ ASPPlayerController::ASPPlayerController()
 	if (UI_MENU_C.Succeeded())
 	{
 		MenuWidgetClass = UI_MENU_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<USPGamePlayResultWidget> UI_RESULT_C(
+		TEXT("/Game/UI/UI_Result.UI_Result_C"));
+	if (UI_RESULT_C.Succeeded())
+	{
+		ResultWidgetClass = UI_RESULT_C.Class;
 	}
 }
 
@@ -49,6 +57,12 @@ void ASPPlayerController::BeginPlay()
 	if (nullptr == HUDWidget) return;
 	HUDWidget->AddToViewport(1);
 
+	ResultWidget = CreateWidget<USPGamePlayResultWidget>(this, ResultWidgetClass);
+	if (ResultWidget == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("ResultWidget is nullptr"));
+		return;
+	}
+
 	auto SPGameState = Cast<ASPGameState>(GetWorld()->GetGameState());
 	if (SPGameState == nullptr){
 		UE_LOG(LogTemp, Warning, TEXT("SPGameState is nullptr"));
@@ -75,6 +89,19 @@ void ASPPlayerController::ChangeInputMode(bool bGameMode)
 		SetInputMode(UIInputMode);
 		bShowMouseCursor = true;
 	}
+}
+
+void ASPPlayerController::ShowResultUI()
+{
+	auto SPGameState = Cast<ASPGameState>(UGameplayStatics::GetGameState(this));
+	if (SPGameState != nullptr)
+	{
+		ResultWidget->BindGameState(SPGameState);
+	}
+
+	ResultWidget->AddToViewport();
+	SetPause(true);
+	ChangeInputMode(false);
 }
 
 void ASPPlayerController::OnGamePause()

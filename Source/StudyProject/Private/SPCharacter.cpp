@@ -128,7 +128,7 @@ ASPCharacter::ASPCharacter()
 	HPBarWidget->SetHiddenInGame(true);
 	SetCanBeDamaged(false);
 
-	DeadTimer = 5.0f;
+	DeadTimer = 2.0f;
 }
 
 
@@ -189,24 +189,16 @@ void ASPCharacter::SetCharacterState(ECharacterState NewState)
 
 		if (bIsPlayer)
 		{
+			SPPlayerController->ShowResultUI();
 			DisableInput(SPPlayerController);
 		}
 		else
 		{
 			SPAIController->StopAI();
+			GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle,
+				FTimerDelegate::CreateLambda([this]()->void {
+					if (!bIsPlayer) { Destroy(); } }), DeadTimer, false);
 		}
-
-		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle,
-			FTimerDelegate::CreateLambda([this]()->void {
-				if (bIsPlayer)
-				{
-					SPPlayerController->RestartLevel();
-				}
-				else
-				{
-					Destroy();
-				}
-				}), DeadTimer, false);
 
 		break;
 	}

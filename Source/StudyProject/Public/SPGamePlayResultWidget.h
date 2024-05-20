@@ -14,6 +14,12 @@ class STUDYPROJECT_API USPGamePlayResultWidget : public USPGamePlayWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void BindGameState(class ASPGameState* GameState);
+
 protected:
 	virtual void NativeConstruct() override;
+
+private:
+	TWeakObjectPtr<class ASPGameState> CurrentGameState;
 };

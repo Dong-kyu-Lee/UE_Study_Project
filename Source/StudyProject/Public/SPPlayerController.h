@@ -21,6 +21,8 @@ public:
 
 	void ChangeInputMode(bool bGameMode = true);
 
+	void ShowResultUI();
+
 protected:
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
@@ -30,6 +32,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<class USPGamePlayWidget> MenuWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<class USPGamePlayResultWidget> ResultWidgetClass;
 
 private:
 	void OnGamePause();
@@ -41,6 +46,9 @@ private:
 
 	UPROPERTY()
 	class USPGamePlayWidget* MenuWidget;
+
+	UPROPERTY()
+	class USPGamePlayResultWidget* ResultWidget;
 
 	FInputModeGameOnly GameInputMode;
 	FInputModeUIOnly UIInputMode;

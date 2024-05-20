@@ -20,6 +20,8 @@ public:
 	int32 GetTotalGameScore() const;
 	void AddGameScore();
 	int32 GetCurrentTime() const;
+	void SetGameCleared();
+	bool IsGameCleared() const;
 
 	FOnTimeSecondDelegate OnTimeSecond;
 
@@ -28,6 +30,9 @@ protected:
 
 private:
 	void UpdateTimer();
+
+	UPROPERTY(Transient)
+	bool bGameCleared;
 
 	UPROPERTY(Transient)
 	int32 TotalGameScore;

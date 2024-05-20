@@ -3,6 +3,7 @@
 
 #include "SPFinish.h"
 #include "SPCharacter.h"
+#include "SPPlayerController.h"
 
 // Sets default values
 ASPFinish::ASPFinish()
@@ -43,10 +44,16 @@ void ASPFinish::OnCharacterHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	{
 		if (SPCharacter->IsPlayerControlled() && SPCharacter->GetHasKey())
 		{
+			ASPPlayerController* SPPlayerController = Cast<ASPPlayerController>(SPCharacter->GetController());
 			UE_LOG(LogTemp, Warning, TEXT("Door Opened!"));
 			SPCharacter->SetHasKey(false);
 			Trigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Door->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+			if (nullptr != SPPlayerController)
+			{
+				SPPlayerController->ShowResultUI();
+				SPCharacter->DisableInput(SPPlayerController);
+			}
 		}
 	}
 }

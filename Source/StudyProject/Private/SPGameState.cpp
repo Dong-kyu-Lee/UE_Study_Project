@@ -6,8 +6,9 @@
 ASPGameState::ASPGameState()
 {
 	TotalGameScore = 0;
-	GameTime = 50;
+	GameTime = 150;
 	CurrentTime = GameTime;
+	bGameCleared = false;
 }
 
 int32 ASPGameState::GetTotalGameScore() const
@@ -23,6 +24,16 @@ void ASPGameState::AddGameScore()
 int32 ASPGameState::GetCurrentTime() const
 {
 	return CurrentTime;
+}
+
+void ASPGameState::SetGameCleared()
+{
+	bGameCleared = true;
+}
+
+bool ASPGameState::IsGameCleared() const
+{
+	return bGameCleared;
 }
 
 void ASPGameState::BeginPlay()
@@ -44,5 +55,6 @@ void ASPGameState::UpdateTimer()
 	else
 	{
 		GetWorldTimerManager().ClearTimer(GameTimer);
+
 	}
 }

@@ -19,13 +19,6 @@ void USPGamePlayResultWidget::NativeConstruct()
 	if (nullptr == Result) return;
 	Result->SetText(FText::FromString(CurrentGameState->IsGameCleared() ? 
 	TEXT("Mission Complete") : TEXT("Mission Failed")));
-
-	auto TotalScore = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtTotalScore")));
-	if (nullptr == TotalScore) {
-		UE_LOG(LogTemp, Warning, TEXT("TotalScore is nullptr"));
-		return;
-	}
-	TotalScore->SetText(FText::FromString(FString::FromInt(CurrentGameState->GetTotalGameScore())));
 }
 
 void USPGamePlayResultWidget::BindGameState(ASPGameState* GameState)

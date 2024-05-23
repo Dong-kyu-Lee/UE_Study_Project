@@ -2,6 +2,7 @@
 
 
 #include "SPGameState.h"
+#include "SPPlayerController.h"
 
 ASPGameState::ASPGameState()
 {
@@ -44,7 +45,6 @@ void ASPGameState::BeginPlay()
 
 void ASPGameState::UpdateTimer()
 {
-	// UE_LOG(LogTemp, Warning, TEXT("UpdateTimer Tick"));
 	// CurrentTime을 업데이트
 	CurrentTime--;
 	// 시간이 0보다 작으면 게임 종료
@@ -54,7 +54,7 @@ void ASPGameState::UpdateTimer()
 	}
 	else
 	{
+		OnTimeUp.Broadcast();
 		GetWorldTimerManager().ClearTimer(GameTimer);
-
 	}
 }

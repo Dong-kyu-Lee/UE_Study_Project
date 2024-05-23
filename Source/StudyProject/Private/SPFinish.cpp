@@ -3,6 +3,7 @@
 
 #include "SPFinish.h"
 #include "SPCharacter.h"
+#include "SPGameState.h"
 #include "SPPlayerController.h"
 
 // Sets default values
@@ -51,6 +52,9 @@ void ASPFinish::OnCharacterHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 			Door->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 			if (nullptr != SPPlayerController)
 			{
+				ASPGameState* SPGameState = Cast<ASPGameState>(GetWorld()->GetGameState());
+				if (nullptr != SPGameState)
+					SPGameState->SetGameCleared();
 				SPPlayerController->ShowResultUI();
 				SPCharacter->DisableInput(SPPlayerController);
 			}

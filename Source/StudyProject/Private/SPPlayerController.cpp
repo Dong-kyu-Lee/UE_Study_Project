@@ -63,17 +63,23 @@ void ASPPlayerController::BeginPlay()
 		return;
 	}
 
-	auto SPGameState = Cast<ASPGameState>(GetWorld()->GetGameState());
-	if (SPGameState == nullptr){
+	CurrentGameState = Cast<ASPGameState>(GetWorld()->GetGameState());
+	if (CurrentGameState == nullptr){
 		UE_LOG(LogTemp, Warning, TEXT("SPGameState is nullptr"));
 		return;
 	}
+
 	auto SPCharacter = Cast<ASPCharacter>(GetCharacter());
 	if (SPCharacter == nullptr) {
 		UE_LOG(LogTemp, Warning, TEXT("SPCharacter is nullptr"));
 		return;
 	}
-	HUDWidget->BindLeftTime(SPGameState);
+
+	CurrentGameState->OnTimeUp.AddLambda([this]()->void {
+		ShowResultUI();
+		});
+
+	HUDWidget->BindLeftTime(CurrentGameState);
 	HUDWidget->BindAttackCool(SPCharacter);
 }
 
@@ -93,10 +99,9 @@ void ASPPlayerController::ChangeInputMode(bool bGameMode)
 
 void ASPPlayerController::ShowResultUI()
 {
-	auto SPGameState = Cast<ASPGameState>(UGameplayStatics::GetGameState(this));
-	if (SPGameState != nullptr)
+	if (CurrentGameState != nullptr)
 	{
-		ResultWidget->BindGameState(SPGameState);
+		ResultWidget->BindGameState(CurrentGameState);
 	}
 
 	ResultWidget->AddToViewport();

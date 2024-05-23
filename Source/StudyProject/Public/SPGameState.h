@@ -7,6 +7,7 @@
 #include "SPGameState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnTimeSecondDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnTimeUpDelegate);
 
 UCLASS()
 class STUDYPROJECT_API ASPGameState : public AGameStateBase
@@ -24,6 +25,7 @@ public:
 	bool IsGameCleared() const;
 
 	FOnTimeSecondDelegate OnTimeSecond;
+	FOnTimeUpDelegate OnTimeUp;
 
 protected:
 	virtual void BeginPlay() override;

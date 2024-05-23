@@ -281,13 +281,6 @@ void ASPCharacter::Tick(float DeltaTime)
 		GetController()->SetControlRotation(FRotationMatrix::MakeFromX(DirectionToMove).Rotator());
 		AddMovementInput(DirectionToMove);
 	}
-
-	/*if (CurrentAttackCool > 0 && !IsAIControlled)
-	{
-		CurrentAttackCool -= DeltaTime;
-		float Ratio = CurrentAttackCool / CharacterStat->GetAttackDuration();
-
-	}*/
 }
 
 // Called to bind functionality to input

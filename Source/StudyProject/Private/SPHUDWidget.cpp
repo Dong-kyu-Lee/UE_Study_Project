@@ -33,6 +33,8 @@ void USPHUDWidget::NativeConstruct()
 		UE_LOG(LogTemp, Warning, TEXT("LeftTime Text is nullptr"));
 		return;
 	}
+
+	AttackCoolBar->SetPercent(1.0f);
 }
 
 void USPHUDWidget::UpdateAttackCool()
